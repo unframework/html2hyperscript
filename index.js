@@ -8,11 +8,20 @@ function ItemList(parent) {
     this.parent = parent;
     this.content = '';
     this.spacer = '';
+    this.indent = parent ? parent.indent : '';
     this.isFirstItem = true;
 }
 
 ItemList.prototype.addSpace = function (space) {
     this.spacer += space;
+
+    if (space.indexOf("\n") !== -1) {
+        // reset indent when there are new lines
+        this.indent = /[^\n]*$/.exec(space)[0];
+    } else {
+        // otherwise keep appending to current indent
+        this.indent += space;
+    }
 }
 
 ItemList.prototype.add = function (data, ignoreComma) {
@@ -66,13 +75,32 @@ var parser = new Parser({
         var element = elementStack.shift();
         var elementContent = currentItemList.content + currentItemList.spacer;
 
-        var item = 'h(' + JSON.stringify(element[0]) + (
+        currentItemList = currentItemList.parent;
+
+        var indent = currentItemList.indent;
+
+        var attribs = element[1];
+
+        var id = attribs['id'];
+        var idSuffix = id !== undefined ? '#' + id : '';
+        delete attribs['id'];
+
+        var classNames = attribs['class'];
+        var classSuffix = (classNames !== undefined ? classNames : '').split(/\s+/g).filter(function (v) { return v.length > 0; }).map(function (cls) { return '.' + cls; }).join('');
+        delete attribs['class'];
+
+        var attrPairs = Object.keys(attribs).map(function (k) { return JSON.stringify(k) + ': ' + JSON.stringify(attribs[k]) });
+
+        var item = 'h(' + JSON.stringify(element[0] + idSuffix + classSuffix) + (
+            attrPairs.length
+                ? ", { attributes: {\n" + indent + '    ' + attrPairs.join(",\n" + indent + '    ') + "\n" + indent + "} }"
+                : ''
+        ) + (
             elementContent.length
-                ? ', [' + elementContent + ']'
+                ? ', [' + (elementContent[0] === "\n" ? '' : ' ') + elementContent + (elementContent.match(/\s$/) ? '' : ' ') + ']'
                 : ''
         ) + ')';
 
-        currentItemList = currentItemList.parent;
         currentItemList.add(item);
     },
     oncomment: function (text) {
