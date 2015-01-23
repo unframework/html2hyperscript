@@ -1,3 +1,10 @@
+#!/usr/bin/env node
+
+var fileName = process.argv[2];
+
+if (!fileName) {
+    throw new Error('supply input HTML file as first argument');
+}
 
 var fs = require('fs');
 var Parser = require('htmlparser2').Parser;
@@ -108,7 +115,8 @@ var parser = new Parser({
     }
 }, {decodeEntities: true});
 
-parser.write(fs.readFileSync(process.argv[2]));
+parser.write(fs.readFileSync(fileName));
 parser.end();
 
 process.stdout.write(currentItemList.content);
+process.stdout.write("\n");
