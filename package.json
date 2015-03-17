@@ -1,7 +1,12 @@
 {
   "name": "html2hyperscript",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Convert legacy HTML to Hyperscript (https://github.com/dominictarr/hyperscript)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/unframework/html2hyperscript.git"
+  },
+
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,8 +18,5 @@
   "license": "MIT",
   "dependencies": {
     "htmlparser2": "~3.8.2"
-  },
-  "devDependencies": {
-    "browserify": "~8.1.1"
   }
 }
