@@ -2,6 +2,8 @@
 
 Automatically translate old HTML markup into the new Hyperscript markup embeddable directly inside your component Javascript code.
 
+Use this for hand-converting legacy project source code (e.g. AngularJS templates): care is taken to preserve original whitespace and even comments. For dynamic serving and CI builds check out https://github.com/alexmingoia/jsx-transform instead.
+
 ```
 npm install -g html2hyperscript
 html2hyperscript legacy_markup_file.html > shiny_new_syntax.js
