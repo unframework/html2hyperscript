@@ -1,15 +1,5 @@
-#!/usr/bin/env node
 
-var fileName = process.argv[2];
-
-if (!fileName) {
-    throw new Error('supply input HTML file as first argument');
-}
-
-var fs = require('fs');
 var Parser = require('htmlparser2').Parser;
-
-var elementStack = [];
 
 function ItemList(parent) {
     this.parent = parent;
@@ -46,77 +36,81 @@ ItemList.prototype.add = function (data, ignoreComma) {
     this.content += data;
 }
 
-var currentItemList = new ItemList(null);
+function convert(inputMarkup) {
+    var elementStack = [];
+    var currentItemList = new ItemList(null);
 
-var parser = new Parser({
-    onopentag: function (name, attribs) {
-        currentItemList = new ItemList(currentItemList);
-        elementStack.unshift([ name, attribs ]);
-    },
-    ontext: function (text) {
-        var lines = text.split("\n");
+    var parser = new Parser({
+        onopentag: function (name, attribs) {
+            currentItemList = new ItemList(currentItemList);
+            elementStack.unshift([ name, attribs ]);
+        },
+        ontext: function (text) {
+            var lines = text.split("\n");
 
-        var isFirst = true;
+            var isFirst = true;
 
-        lines.forEach(function (line) {
-            var lineMatch = /^(\s*)(.*?)(\s*)$/.exec(line);
+            lines.forEach(function (line) {
+                var lineMatch = /^(\s*)(.*?)(\s*)$/.exec(line);
 
-            var preSpace = lineMatch[1],
-                mainText = lineMatch[2],
-                postSpace = lineMatch[3];
+                var preSpace = lineMatch[1],
+                    mainText = lineMatch[2],
+                    postSpace = lineMatch[3];
 
-            if (!isFirst) {
-                currentItemList.addSpace("\n");
-            }
+                if (!isFirst) {
+                    currentItemList.addSpace("\n");
+                }
 
-            currentItemList.addSpace(preSpace);
+                currentItemList.addSpace(preSpace);
 
-            if (mainText.length > 0) {
-                currentItemList.add(JSON.stringify(mainText));
-            }
+                if (mainText.length > 0) {
+                    currentItemList.add(JSON.stringify(mainText));
+                }
 
-            isFirst = false;
-        });
-    },
-    onclosetag: function (tagname) {
-        var element = elementStack.shift();
-        var elementContent = currentItemList.content + currentItemList.spacer;
+                isFirst = false;
+            });
+        },
+        onclosetag: function (tagname) {
+            var element = elementStack.shift();
+            var elementContent = currentItemList.content + currentItemList.spacer;
 
-        currentItemList = currentItemList.parent;
+            currentItemList = currentItemList.parent;
 
-        var indent = currentItemList.indent;
+            var indent = currentItemList.indent;
 
-        var attribs = element[1];
+            var attribs = element[1];
 
-        var id = attribs['id'];
-        var idSuffix = id !== undefined ? '#' + id : '';
-        delete attribs['id'];
+            var id = attribs['id'];
+            var idSuffix = id !== undefined ? '#' + id : '';
+            delete attribs['id'];
 
-        var classNames = attribs['class'];
-        var classSuffix = (classNames !== undefined ? classNames : '').split(/\s+/g).filter(function (v) { return v.length > 0; }).map(function (cls) { return '.' + cls; }).join('');
-        delete attribs['class'];
+            var classNames = attribs['class'];
+            var classSuffix = (classNames !== undefined ? classNames : '').split(/\s+/g).filter(function (v) { return v.length > 0; }).map(function (cls) { return '.' + cls; }).join('');
+            delete attribs['class'];
 
-        var attrPairs = Object.keys(attribs).map(function (k) { return JSON.stringify(k) + ': ' + JSON.stringify(attribs[k]) });
+            var attrPairs = Object.keys(attribs).map(function (k) { return JSON.stringify(k) + ': ' + JSON.stringify(attribs[k]) });
 
-        var item = 'h(' + JSON.stringify(element[0] + idSuffix + classSuffix) + (
-            attrPairs.length
-                ? ", { attributes: {\n" + indent + '    ' + attrPairs.join(",\n" + indent + '    ') + "\n" + indent + "} }"
-                : ''
-        ) + (
-            elementContent.length
-                ? ', [' + (elementContent[0] === "\n" ? '' : ' ') + elementContent + (elementContent.match(/\s$/) ? '' : ' ') + ']'
-                : ''
-        ) + ')';
+            var item = 'h(' + JSON.stringify(element[0] + idSuffix + classSuffix) + (
+                attrPairs.length
+                    ? ", { attributes: {\n" + indent + '    ' + attrPairs.join(",\n" + indent + '    ') + "\n" + indent + "} }"
+                    : ''
+            ) + (
+                elementContent.length
+                    ? ', [' + (elementContent[0] === "\n" ? '' : ' ') + elementContent + (elementContent.match(/\s$/) ? '' : ' ') + ']'
+                    : ''
+            ) + ')';
 
-        currentItemList.add(item);
-    },
-    oncomment: function (text) {
-        currentItemList.add('/*' + text + '*/', false); // @todo comment-safety
-    }
-}, {decodeEntities: true});
+            currentItemList.add(item);
+        },
+        oncomment: function (text) {
+            currentItemList.add('/*' + text + '*/', false); // @todo comment-safety
+        }
+    }, {decodeEntities: true});
 
-parser.write(fs.readFileSync(fileName));
-parser.end();
+    parser.write(inputMarkup);
+    parser.end();
 
-process.stdout.write(currentItemList.content);
-process.stdout.write("\n");
+    return currentItemList.content;
+}
+
+module.exports = convert;
