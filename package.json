@@ -1,6 +1,6 @@
 {
   "name": "html2hyperscript",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Convert legacy HTML to Hyperscript (https://github.com/dominictarr/hyperscript)",
   "repository": {
     "type": "git",
