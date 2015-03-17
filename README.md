@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/unframework/html2hyperscript.svg?branch=master)](https://travis-ci.org/unframework/html2hyperscript)
+
 # Convert Legacy HTML to Hyperscript
 
 Automatically translate old HTML markup into the new Hyperscript markup embeddable directly inside your component Javascript code.
