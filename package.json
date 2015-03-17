@@ -6,10 +6,9 @@
     "type": "git",
     "url": "https://github.com/unframework/html2hyperscript.git"
   },
-
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap ./test"
   },
   "bin": {
     "html2hyperscript": "./commandline.js"
@@ -18,5 +17,9 @@
   "license": "MIT",
   "dependencies": {
     "htmlparser2": "~3.8.2"
+  },
+  "devDependencies": {
+    "hyperscript": "~1.4.4",
+    "tap": "~0.7.1"
   }
 }
