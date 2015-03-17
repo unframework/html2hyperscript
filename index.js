@@ -92,7 +92,7 @@ function convert(inputMarkup) {
 
             var item = 'h(' + JSON.stringify(element[0] + idSuffix + classSuffix) + (
                 attrPairs.length
-                    ? ", { attributes: {\n" + indent + '    ' + attrPairs.join(",\n" + indent + '    ') + "\n" + indent + "} }"
+                    ? ", {\n" + indent + '    ' + attrPairs.join(",\n" + indent + '    ') + "\n" + indent + "}"
                     : ''
             ) + (
                 elementContent.length

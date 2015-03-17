@@ -16,3 +16,11 @@ testCase(function (test) {
 
     test.end();
 });
+
+testCase(function (test) {
+    var html = '<div my-attribute="attr-value" some="thing"></div>';
+
+    test.equal(executeJSMarkup(convert(html)), html, 'generated markup should match source');
+
+    test.end();
+});
