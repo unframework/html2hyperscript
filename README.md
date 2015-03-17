@@ -2,6 +2,11 @@
 
 Automatically translate old HTML markup into the new Hyperscript markup embeddable directly inside your component Javascript code.
 
+```
+npm install -g html2hyperscript
+html2hyperscript legacy_markup_file.html > shiny_new_syntax.js
+```
+
 See Hyperscript library: https://github.com/dominictarr/hyperscript
 
 Also useful for virtual DOM Hyperscript-like syntax: https://github.com/Matt-Esch/virtual-dom
@@ -62,6 +67,5 @@ h("table.sample-html", [
 
 ## TODO
 
-- publish NPM package
-- online converter tool
+- some tests
 
