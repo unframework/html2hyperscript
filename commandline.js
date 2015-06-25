@@ -1,13 +1,22 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
+var gather = require('gather-stream');
 var convert = require('./');
 
 var fileName = process.argv[2];
 
-if (!fileName) {
-    throw new Error('supply input HTML file as first argument');
-}
+var stream = fileName ?
+  fs.createReadStream(fileName) :
+  process.stdin;
 
-process.stdout.write(convert(fs.readFileSync(fileName)));
-process.stdout.write("\n");
+stream.pipe( gather(function(err, buffer) {
+  if (err) console.error(error);
+  else if (!buffer.length) {
+    console.log('supply input HTML as first argument or stdin');
+  }
+  else {
+    process.stdout.write( convert(buffer) );
+    process.stdout.write('\n');
+  }
+}));
