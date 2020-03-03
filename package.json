@@ -16,6 +16,7 @@
   "author": "Nick Matantsev <nick.m@myplanet.io>",
   "license": "MIT",
   "dependencies": {
+    "gather-stream": "^1.0.0",
     "htmlparser2": "~3.8.2"
   },
   "devDependencies": {
